@@ -1,0 +1,106 @@
+version: "3.9"
+
+services:
+
+  # ── FastAPI (CPU) ───────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vtryon_api
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vtryon
+    volumes:
+      - ./app:/code/app         # Python kaynak kodu (hot-reload)
+      - ./static:/code/static   # Frontend HTML (hot-reload)
+      - ./uploads:/code/uploads # Islenen dosyalar (originals/cleaned/models)
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # ── Celery Worker ───────────────────────────────────────────────
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vtryon_worker
+    env_file: .env
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vtryon
+    volumes:
+      - ./app:/code/app         # Python kaynak kodu
+      - ./uploads:/code/uploads # api ile paylasilan islenmis dosyalar
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    command: >
+      celery -A app.worker.celery_app.celery worker
+        --loglevel=info
+        --concurrency=2
+        -Q celery,gpu_queue
+
+  # ── Celery Flower (monitoring UI) ───────────────────────────────
+  flower:
+    image: mher/flower:2.0
+    container_name: vtryon_flower
+    ports:
+      - "5555:5555"
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      FLOWER_PORT: 5555
+    depends_on:
+      - redis
+      - worker
+    restart: unless-stopped
+
+  # ── PostgreSQL ───────────────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    container_name: vtryon_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vtryon
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d vtryon"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  # ── Redis ────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: vtryon_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:    # PostgreSQL kalici veri depolama
+  redis_data:
