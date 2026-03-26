@@ -17,6 +17,14 @@ from pathlib import Path
 
 from app.worker.celery_app import celery
 
+# Tüm ORM modellerini Base metadata'ya kayıt et.
+# Celery worker ayağa kalkarken ForeignKey hedef tablolar
+# (avatars, garments) zaten bellekte olmalı; aksi halde
+# SQLAlchemy NoReferencedTableError fırlatır.
+from app.models.garment import Garment   # noqa: F401 — garments tablosunu kayıt et
+from app.models.avatar  import Avatar    # noqa: F401 — avatars  tablosunu kayıt et
+from app.models.tryon   import TryOn     # noqa: F401 — try_ons  tablosunu kayıt et
+
 logger = logging.getLogger(__name__)
 
 # Yerel fallback klasorleri (S3 yokken kullanilir)
@@ -46,6 +54,159 @@ def _db_update(job_id: str, **fields) -> None:
                 garment.updated_at = datetime.now(timezone.utc)
     except Exception as db_err:
         logger.warning(f"[DB] Guncelleme basarisiz (job_id={job_id}): {db_err}")
+
+
+# ─────────────────────────────────────────────────────────────────
+# Try-On Pipeline Task
+# ─────────────────────────────────────────────────────────────────
+
+FALLBACK_TRYON_URL = (
+    "https://placehold.co/400x600/1a1a2e/ffffff"
+    "?text=HuggingFace+Yogun%0AMock+Gosteriliyor"
+)
+
+# Cinsiyet bazlı telifsiz manken fotoğrafları (Unsplash)
+_MANNEQUIN_URLS = {
+    "female": "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&q=80",
+    "male":   "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80",
+    "unisex": "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&q=80",
+}
+
+
+@celery.task(
+    bind=True,
+    name="tasks.process_tryon_task",
+    max_retries=1,
+    default_retry_delay=5,
+    soft_time_limit=120,   # 2 dk — HF Space yavaş olabilir
+    time_limit=150,
+)
+def process_tryon_task(self, tryon_id: str):
+    """
+    V4 — Sanal Deneme (Try-On) Arka Plan Görevi
+
+    Akış:
+      1. TryOn kaydını 'processing' yap.
+      2. İlişkili Garment ve Avatar verilerini oku.
+      3. Hugging Face IDM-VTON Space'e gradio_client ile çağrı yap.
+      4. Başarılı → result_url = HF sonucu → completed
+         Hata/timeout → result_url = fallback placeholder → completed
+         (görev *asla* failed olmaz; kullanıcı her zaman bir görsel görür)
+    """
+    import uuid as _uuid
+
+    log = logging.getLogger(f"tasks.tryon.{tryon_id[:8]}")
+    log.info(f"[TryOn {tryon_id}] V4 görevi başladı.")
+
+    # ── 0. Yardımcı: DB'ye güvenli yaz ───────────────────────────
+    def _save_result(result_url: str) -> None:
+        try:
+            from app.db.database import get_db_context
+            with get_db_context() as db:
+                row = db.query(TryOn).filter(TryOn.id == _uuid.UUID(tryon_id)).first()
+                if row:
+                    row.status     = "completed"
+                    row.result_url = result_url
+                    db.commit()
+                    log.info(f"[TryOn {tryon_id}] Kaydedildi → {result_url[:60]}…")
+        except Exception as db_err:
+            log.error(f"[TryOn {tryon_id}] DB yazma hatası: {db_err}")
+
+    # ── 1. Durum: processing ──────────────────────────────────────
+    try:
+        from app.db.database import get_db_context
+        with get_db_context() as db:
+            row = db.query(TryOn).filter(TryOn.id == _uuid.UUID(tryon_id)).first()
+            if not row:
+                log.error(f"[TryOn {tryon_id}] Kayıt bulunamadı.")
+                return
+            row.status = "processing"
+            db.commit()
+            # İlişkili verileri oku (session kapanmadan önce)
+            avatar_gender  = row.avatar.gender  if hasattr(row, "avatar")  else "female"
+            garment_img    = None
+            # Avatar ve Garment lazy-load (detached session öncesi)
+            avatar_id_val  = row.avatar_id
+            garment_id_val = row.garment_id
+    except Exception as exc:
+        log.exception(f"[TryOn {tryon_id}] DB processing hatası: {exc}")
+        return
+
+    # Avatar ve kıyafet bilgilerini ayrı session'da oku
+    try:
+        from app.db.database import get_db_context
+        with get_db_context() as db:
+            avatar  = db.query(Avatar).filter(Avatar.id  == avatar_id_val).first()
+            garment = db.query(Garment).filter(Garment.id == garment_id_val).first()
+            avatar_gender = getattr(avatar,  "gender",      "female") if avatar  else "female"
+            garment_img   = getattr(garment, "cleaned_url", None)     if garment else None
+            if not garment_img:
+                garment_img = getattr(garment, "original_url", None)  if garment else None
+    except Exception as exc:
+        log.warning(f"[TryOn {tryon_id}] Avatar/Garment okunamadı: {exc}")
+        avatar_gender = "female"
+        garment_img   = None
+
+    mannequin_url = _MANNEQUIN_URLS.get(avatar_gender, _MANNEQUIN_URLS["female"])
+    log.info(f"[TryOn {tryon_id}] Manken: {avatar_gender} | Kıyafet URL: {garment_img}")
+
+    # ── 2. IDM-VTON (Hugging Face Space) Çağrısı ─────────────────
+    result_url = FALLBACK_TRYON_URL   # güvenli varsayılan
+
+    if not garment_img:
+        log.warning(f"[TryOn {tryon_id}] Kıyafet görseli yok → fallback kullanılıyor.")
+        _save_result(result_url)
+        return
+
+    try:
+        from gradio_client import Client, handle_file
+        log.info(f"[TryOn {tryon_id}] HF IDM-VTON bağlantısı kuruluyor…")
+        client = Client("yisol/IDM-VTON", verbose=False)
+
+        log.info(f"[TryOn {tryon_id}] IDM-VTON predict() çağrısı yapılıyor…")
+        api_result = client.predict(
+            dict={
+                "background": handle_file(mannequin_url),
+                "layers":     [],
+                "composite":  None,
+            },
+            garm_img      = handle_file(garment_img),
+            garment_des   = "clothing item",    # kısa açıklama
+            is_checked     = True,
+            is_checked_crop= False,
+            denoise_steps  = 30,
+            seed           = 42,
+            api_name       = "/tryon",
+        )
+
+        # Sonuç: (image_path, mask_path) veya sadece image_path döner
+        if isinstance(api_result, (list, tuple)):
+            raw = api_result[0]
+        else:
+            raw = api_result
+
+        # gradio_client yerel dosya yolu veya {'url': ...} döner
+        if isinstance(raw, dict) and "url" in raw:
+            result_url = raw["url"]
+        elif isinstance(raw, str) and raw.startswith("http"):
+            result_url = raw
+        else:
+            # yerel dosya yolu — fallback kullan
+            log.warning(f"[TryOn {tryon_id}] Beklenmedik sonuç tipi ({type(raw)}), fallback.")
+            result_url = FALLBACK_TRYON_URL
+
+        log.info(f"[TryOn {tryon_id}] IDM-VTON başarılı → {result_url[:60]}…")
+
+    except Exception as hf_err:
+        # Timeout, quota aşımı, model yükleme hatası — hepsini yut
+        log.warning(
+            f"[TryOn {tryon_id}] HF IDM-VTON başarısız "
+            f"({type(hf_err).__name__}: {hf_err!s:.120}) → fallback."
+        )
+        result_url = FALLBACK_TRYON_URL
+
+    # ── 3. Sonucu Kaydet (her durumda completed) ──────────────────
+    _save_result(result_url)
 
 
 # ─────────────────────────────────────────────────────────────────

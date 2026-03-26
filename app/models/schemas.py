@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Literal, Optional
 from datetime import datetime
 
 
@@ -50,6 +50,10 @@ class GarmentRecord(BaseModel):
     original_url: Optional[str] = None
     cleaned_url: Optional[str] = None
     model_url: Optional[str] = None
+    # Fiziksel olculer
+    length_cm: Optional[int] = None
+    width_cm: Optional[int] = None
+    sleeve_length_cm: Optional[int] = None
     created_at: datetime
     updated_at: datetime
 
@@ -66,3 +70,75 @@ class GarmentUpdateRequest(BaseModel):
     """PATCH /garments/{id} — Kismi guncelleme."""
     name: Optional[str] = Field(None, max_length=200, description="Kiyafetin ozel adi")
     is_favorite: Optional[bool] = Field(None, description="Favori durumu")
+    # Fiziksel olculer
+    length_cm: Optional[int] = Field(None, ge=1, le=500, description="Kiyafet boyu (cm)")
+    width_cm: Optional[int] = Field(None, ge=1, le=300, description="Genislik/bel (cm)")
+    sleeve_length_cm: Optional[int] = Field(None, ge=1, le=200, description="Kol boyu (cm)")
+
+
+# ── Avatar ────────────────────────────────────────────────────────
+
+GenderType    = Literal["male", "female", "unisex"]
+BodyShapeType = Literal["rectangle", "triangle", "hourglass", "inverted_triangle", "oval"]
+
+
+class AvatarCreate(BaseModel):
+    """POST /api/v1/avatars/ — Yeni avatar olustur."""
+    name: str = Field("Benim Avatarım", max_length=200, description="Avatar adi")
+    gender: GenderType = Field(..., description="male | female | unisex")
+    height_cm: int = Field(..., ge=50, le=250, description="Boy (cm)")
+    weight_kg: int = Field(..., ge=20, le=300, description="Agirlik (kg)")
+    body_shape: BodyShapeType = Field(
+        ..., description="rectangle | triangle | hourglass | inverted_triangle | oval"
+    )
+
+
+class AvatarUpdate(BaseModel):
+    """PATCH /api/v1/avatars/{id} — Kismi guncelleme."""
+    name: Optional[str] = Field(None, max_length=200)
+    gender: Optional[GenderType] = None
+    height_cm: Optional[int] = Field(None, ge=50, le=250)
+    weight_kg: Optional[int] = Field(None, ge=20, le=300)
+    body_shape: Optional[BodyShapeType] = None
+    model_url: Optional[str] = None   # 3D GLB asset URL'si (mock veya gercek)
+
+
+class AvatarResponse(BaseModel):
+    """Tek bir avatar kaydini temsil eder."""
+    id: str
+    name: str
+    gender: str
+    height_cm: int
+    weight_kg: int
+    body_shape: str
+    model_url: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class AvatarListResponse(BaseModel):
+    total: int
+    items: list[AvatarResponse]
+
+
+# ── TryOn ─────────────────────────────────────────────────────────
+
+class TryOnCreate(BaseModel):
+    """POST /api/v1/tryon/ — Yeni try-on işlemi başlat."""
+    avatar_id: str = Field(..., description="Avatar UUID")
+    garment_id: str = Field(..., description="Garment UUID")
+
+
+class TryOnResponse(BaseModel):
+    """Try-on kaydının güncel durumunu temsil eder."""
+    id: str
+    avatar_id: str
+    garment_id: str
+    status: str                    # pending | processing | completed | failed
+    result_url: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

@@ -32,13 +32,11 @@ def create_app() -> FastAPI:
     )
 
     # ── Rotalar ────────────────────────────────────────────────────
-    from app.routers import health, garments
+    from app.routers import health, garments, avatars, tryon
     app.include_router(health.router)
     app.include_router(garments.router)
-
-    # Aşağıdaki router'lar ilerleyen haftalarda eklenir:
-    # from app.routers import avatars
-    # app.include_router(avatars.router)
+    app.include_router(avatars.router)
+    app.include_router(tryon.router)
 
     # ── Upload & Static Klasörleri ──────────────────────────────────
     # app.mount() çağrısı anında dizin yoksa FastAPI RuntimeError fırlatır.
@@ -69,10 +67,13 @@ def create_app() -> FastAPI:
         # ── Tablolari olustur (mevcut tablolar atlanir) ──────────
         # Import sirasi onemli: model dosyalari Base'e kayit olsun
         from app.db.database import Base, engine
-        import app.models.garment  # noqa: F401 — modeli Base'e kayit eder
+        import app.models.garment  # noqa: F401
+        import app.models.avatar   # noqa: F401
+        import app.models.tryon    # noqa: F401  — try_ons tablosu
 
         Base.metadata.create_all(bind=engine)
-        logger.info("Veritabani tablolari kontrol edildi / olusturuldu.")
+        logger.info("Veritabani tablolari kontrol edildi / olusturuldu (garments + avatars + try_ons).")
+
         logger.info(f"{settings.APP_NAME} v{settings.APP_VERSION} baslatildi.")
 
     @app.on_event("shutdown")

@@ -326,6 +326,286 @@
         }
         .modal-close:hover { border-color: var(--danger); color: var(--danger); }
         #modal-viewer { width: 100%; height: 400px; border-radius: var(--radius-sm); background: var(--surface2); }
+
+        /* ── Tab Switcher ───────────────────────────── */
+        .tab-bar {
+            display: flex; gap: .5rem; margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border); padding-bottom: 0;
+        }
+        .tab-btn {
+            background: none; border: none; color: var(--text-muted);
+            font-size: .9rem; font-weight: 600; padding: .6rem 1.1rem;
+            cursor: pointer; border-bottom: 2px solid transparent;
+            margin-bottom: -1px; border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            transition: color .2s, border-color .2s;
+        }
+        .tab-btn:hover  { color: var(--text); }
+        .tab-btn.active { color: var(--accent2); border-bottom-color: var(--accent2); }
+        .tab-panel      { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── Avatar Form ───────────────────────────── */
+        .avatar-form-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 2rem;
+            max-width: 680px;
+        }
+        .avatar-form-card h3 {
+            font-size: 1rem; font-weight: 700; margin-bottom: 1.5rem;
+            display: flex; align-items: center; gap: .55rem;
+        }
+        .form-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1.1rem; margin-bottom: 1.5rem;
+        }
+        @media (max-width: 560px) { .form-grid { grid-template-columns: 1fr; } }
+        .form-field { display: flex; flex-direction: column; gap: .4rem; }
+        .form-field label {
+            font-size: .75rem; font-weight: 600; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: .06em;
+        }
+        .form-field input[type="number"],
+        .form-field select {
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); padding: .6rem .85rem;
+            color: var(--text); font-size: .9rem;
+            transition: border-color .2s;
+        }
+        .form-field input[type="number"]:focus,
+        .form-field select:focus { outline: none; border-color: var(--accent); }
+        .avatar-name-wrap { margin-bottom: 1.1rem; }
+        .avatar-name-wrap input[type="text"] {
+            width: 100%; background: var(--surface2); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); padding: .6rem .85rem;
+            color: var(--text); font-size: .9rem; transition: border-color .2s;
+        }
+        .avatar-name-wrap input:focus { outline: none; border-color: var(--accent); }
+
+        /* ── Body Shape Card Picker ────────────────────── */
+        .shape-picker {
+            display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .3rem;
+        }
+        .shape-chip {
+            background: var(--surface2); border: 2px solid var(--border);
+            border-radius: 8px; padding: .4rem .85rem;
+            font-size: .8rem; font-weight: 600; color: var(--text-muted);
+            cursor: pointer; transition: all .18s; user-select: none;
+        }
+        .shape-chip:hover  { border-color: var(--accent2); color: var(--accent2); }
+        .shape-chip.active { border-color: var(--accent); color: var(--accent); background: rgba(108,99,255,.1); }
+
+        /* ── Toast Notification ──────────────────────── */
+        #toast {
+            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: .9rem 1.75rem;
+            font-size: .9rem; font-weight: 500; color: var(--text);
+            box-shadow: 0 8px 32px rgba(0,0,0,.4);
+            opacity: 0; transition: opacity .3s, transform .3s;
+            z-index: 9999; pointer-events: none; text-align: center;
+        }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        #toast.success { border-color: var(--success); color: var(--success); }
+        #toast.error   { border-color: var(--danger);  color: var(--danger); }
+
+        /* ── Sanal Kabin (Fitting Room) ─────────────── */
+        .fitting-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+        @media (max-width: 700px) { .fitting-layout { grid-template-columns: 1fr; } }
+
+        .fitting-select-panel {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 1.5rem; display: flex;
+            flex-direction: column; gap: 1.2rem;
+        }
+        .fitting-select-panel h3 {
+            font-size: .95rem; font-weight: 700; margin-bottom: .2rem;
+            display: flex; align-items: center; gap: .5rem;
+        }
+        .fitting-select { width: 100%; }
+        .fitting-select label {
+            display: block; font-size: .72rem; font-weight: 600;
+            color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: .06em; margin-bottom: .35rem;
+        }
+        .fitting-select select {
+            width: 100%; background: var(--surface2); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); padding: .6rem .85rem;
+            color: var(--text); font-size: .88rem; transition: border-color .2s;
+        }
+        .fitting-select select:focus { outline: none; border-color: var(--accent); }
+
+        .fitting-preview-panel {
+            display: flex; flex-direction: column; gap: 1rem;
+        }
+        .preview-pair {
+            display: grid; grid-template-columns: 1fr 1fr; gap: .9rem;
+        }
+        @media (max-width: 500px) { .preview-pair { grid-template-columns: 1fr; } }
+        .preview-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 1rem;
+            display: flex; flex-direction: column; gap: .5rem;
+            min-height: 150px; transition: border-color .22s;
+        }
+        .preview-card:has(.preview-filled) { border-color: var(--accent); }
+        .preview-card-title {
+            font-size: .72rem; font-weight: 700; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: .06em;
+        }
+        .preview-card-name {
+            font-size: .92rem; font-weight: 700; color: var(--text);
+        }
+        .preview-card-meta {
+            font-size: .75rem; color: var(--text-muted); line-height: 1.55;
+        }
+        .preview-card-empty {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: var(--border);
+        }
+        .preview-model-viewer {
+            width: 100%; height: 160px; border-radius: 6px;
+            background: var(--surface2);
+        }
+        .preview-img {
+            width: 100%; height: 160px; object-fit: contain;
+            border-radius: 6px; background: var(--surface2);
+        }
+
+        /* ── Try-On Buton ──────────────────────────── */
+        .tryon-btn-wrap { margin-top: 1rem; }
+        .btn-tryon {
+            width: 100%; padding: 1rem 2rem;
+            font-size: 1.05rem; font-weight: 800;
+            background: linear-gradient(135deg, #6c63ff 0%, #a78bfa 50%, #ec4899 100%);
+            color: #fff; border: none; border-radius: var(--radius);
+            cursor: pointer;
+            box-shadow: 0 4px 24px rgba(108,99,255,.35);
+            transition: transform .2s, box-shadow .2s, opacity .2s;
+            letter-spacing: .03em;
+        }
+        .btn-tryon:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 36px rgba(108,99,255,.5);
+        }
+        .btn-tryon:active:not(:disabled) { transform: translateY(0); }
+        .btn-tryon:disabled { opacity: .55; cursor: not-allowed; }
+
+        /* ── Try-On Progress ───────────────────────── */
+        #tryon-progress-wrap {
+            display: none; margin-top: 1rem;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 1rem 1.25rem;
+        }
+        #tryon-progress-wrap .progress-label {
+            display: flex; justify-content: space-between;
+            font-size: .82rem; margin-bottom: .5rem;
+        }
+        #tryon-progress-msg { color: var(--text); font-weight: 600; }
+        #tryon-progress-pct { color: var(--accent); font-weight: 700; }
+        #tryon-fill-track {
+            width: 100%; height: 8px; background: var(--surface2);
+            border-radius: 99px; overflow: hidden;
+        }
+        #tryon-fill {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, #6c63ff, #a78bfa, #ec4899);
+            border-radius: 99px;
+            transition: width .35s ease;
+        }
+
+        /* ── Ölçü Akordeon ─────────────────────────── */
+        details.measure-details {
+            margin-top: .9rem; border: 1px solid var(--border);
+            border-radius: var(--radius-sm); overflow: hidden;
+        }
+        details.measure-details summary {
+            padding: .6rem 1rem; cursor: pointer;
+            font-size: .82rem; font-weight: 600; color: var(--text-muted);
+            list-style: none; user-select: none;
+            display: flex; align-items: center; gap: .4rem;
+            background: var(--surface2); transition: background .18s;
+        }
+        details.measure-details summary:hover { background: var(--border); color: var(--text); }
+        details.measure-details[open] summary { color: var(--accent); }
+        .measure-grid {
+            display: grid; grid-template-columns: 1fr 1fr 1fr;
+            gap: .7rem; padding: .9rem 1rem;
+            background: var(--surface);
+        }
+        @media (max-width:560px) { .measure-grid { grid-template-columns: 1fr; } }
+        .measure-field { display: flex; flex-direction: column; gap: .3rem; }
+        .measure-field label { font-size: .72rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; }
+        .measure-field input[type="number"] {
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); padding: .45rem .7rem;
+            color: var(--text); font-size: .88rem; transition: border-color .2s;
+            width: 100%;
+        }
+        .measure-field input[type="number"]:focus { outline: none; border-color: var(--accent); }
+
+        /* ── Ölçü Badge (kart üzerinde) ───────────────── */
+        .measure-badges {
+            display: flex; flex-wrap: wrap; gap: .3rem;
+            margin: .35rem 0 .1rem;
+        }
+        .measure-badge {
+            font-size: .68rem; font-weight: 700;
+            background: rgba(108,99,255,.12); color: var(--accent);
+            border: 1px solid rgba(108,99,255,.25);
+            border-radius: 20px; padding: .15rem .55rem;
+        }
+
+        /* ── Avatar List (CSS Grid) ───────────────── */
+        .avatar-list-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin: 2rem 0 1rem;
+        }
+        .avatar-list-header h3  { font-size: 1rem; font-weight: 700; }
+        #avatar-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.1rem;
+        }
+        .avatar-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); overflow: hidden;
+            transition: transform .22s, border-color .22s, box-shadow .22s;
+        }
+        .avatar-card:hover {
+            transform: translateY(-4px); border-color: var(--accent);
+            box-shadow: 0 10px 32px rgba(108,99,255,.2);
+        }
+        .avatar-card-viewer {
+            width: 100%; height: 180px; background: var(--surface2);
+        }
+        .avatar-card-placeholder {
+            width: 100%; height: 180px; background: var(--surface2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem; color: var(--border);
+        }
+        .avatar-card-body { padding: .85rem 1rem 1rem; }
+        .avatar-card-name {
+            font-size: .9rem; font-weight: 700; color: var(--text);
+            margin-bottom: .3rem; white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis;
+        }
+        .avatar-card-meta {
+            font-size: .75rem; color: var(--text-muted); margin-bottom: .7rem;
+        }
+        .btn-rpm {
+            width: 100%; padding: .45rem;
+            background: linear-gradient(135deg, #7c3aed, #a78bfa);
+            color: #fff; border: none; border-radius: 6px;
+            font-size: .8rem; font-weight: 700; cursor: pointer;
+            transition: opacity .2s;
+        }
+        .btn-rpm:hover { opacity: .85; }
+
     </style>
 </head>
 <body>
@@ -373,6 +653,25 @@
             </div>
             <button id="uploadBtn" class="btn btn-primary" onclick="uploadGarment()">🚀 Yükle ve Dönüştür</button>
         </div>
+
+        <!-- Gelişmiş Ölçüer (Opsiyonel Akordeon) -->
+        <details class="measure-details" id="measureDetails">
+            <summary>📏 Gelişmiş Ölçüler (Opsiyonel)</summary>
+            <div class="measure-grid">
+                <div class="measure-field">
+                    <label for="lengthCm">Kıyafet Boyu (cm)</label>
+                    <input type="number" id="lengthCm" min="1" max="500" placeholder="örn. 70">
+                </div>
+                <div class="measure-field">
+                    <label for="widthCm">Genişlik / Bel (cm)</label>
+                    <input type="number" id="widthCm" min="1" max="300" placeholder="örn. 48">
+                </div>
+                <div class="measure-field">
+                    <label for="sleeveLengthCm">Kol Boyu (cm)</label>
+                    <input type="number" id="sleeveLengthCm" min="1" max="200" placeholder="örn. 62">
+                </div>
+            </div>
+        </details>
     </div>
 
     <!-- Progress Bar (log yerine) -->
@@ -399,18 +698,172 @@
         </div>
     </div>
 
-    <!-- Wardrobe Gallery -->
-    <div class="section-header">
-        <h2>👗 Sanal Gardırobum</h2>
-        <button class="refresh-btn" onclick="loadWardrobe()">↻ Yenile</button>
+    <!-- Tab Switcher -->
+    <div class="tab-bar">
+        <button class="tab-btn active" id="tab-wardrobe" onclick="switchTab('wardrobe')">👗 Sanal Gardırobum</button>
+        <button class="tab-btn"        id="tab-avatar"   onclick="switchTab('avatar')">🧍 Avatar Oluştur</button>
+        <button class="tab-btn"        id="tab-fitting"  onclick="switchTab('fitting')">🪄 Sanal Kabin</button>
     </div>
-    <div id="wardrobe-grid">
-        <div class="wardrobe-empty"><span>🔄</span>Yükleniyor...</div>
+
+    <!-- TAB: Wardrobe Gallery -->
+    <div class="tab-panel active" id="panel-wardrobe">
+        <div class="section-header">
+            <h2>👗 Sanal Gardirobum</h2>
+            <button class="refresh-btn" onclick="loadWardrobe()">↻ Yenile</button>
+        </div>
+        <div id="wardrobe-grid">
+            <div class="wardrobe-empty"><span>🔄</span>Yükleniyor...</div>
+        </div>
+    </div>
+
+    <!-- TAB: Avatar Form -->
+    <div class="tab-panel" id="panel-avatar">
+        <div class="avatar-form-card">
+            <h3>🧍 Yeni Manken / Avatar Profili Oluştur</h3>
+
+            <!-- İsim -->
+            <div class="avatar-name-wrap form-field">
+                <label for="avatarName">Avatar Adı</label>
+                <input type="text" id="avatarName" placeholder="Benim Avatarım" maxlength="200">
+            </div>
+
+            <!-- Cinsiyet + Boy + Kilo -->
+            <div class="form-grid">
+                <div class="form-field">
+                    <label for="avatarGender">Cinsiyet</label>
+                    <select id="avatarGender">
+                        <option value="female">Kadın (Female)</option>
+                        <option value="male">Erkek (Male)</option>
+                        <option value="unisex">Unisex</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="avatarHeight">Boy (cm)</label>
+                    <input type="number" id="avatarHeight" min="50" max="250" placeholder="170">
+                </div>
+                <div class="form-field">
+                    <label for="avatarWeight">Kilo (kg)</label>
+                    <input type="number" id="avatarWeight" min="20" max="300" placeholder="65">
+                </div>
+            </div>
+
+            <!-- Vücut Tipi -->
+            <div class="form-field" style="margin-bottom:1.5rem">
+                <label>Vücut Tipi</label>
+                <div class="shape-picker" id="shapePicker">
+                    <span class="shape-chip active" data-val="rectangle">⬛ Dikdörtgen</span>
+                    <span class="shape-chip"        data-val="hourglass">⌛ Kum Saati</span>
+                    <span class="shape-chip"        data-val="triangle">▽ Armut</span>
+                    <span class="shape-chip"        data-val="inverted_triangle">△ Ters Üçgen</span>
+                    <span class="shape-chip"        data-val="oval">⬭ Oval</span>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="avatarSaveBtn" onclick="createAvatar()">💾 Avatar Profilini Kaydet</button>
+        </div>
+
+        <!-- Avatar Listesi -->
+        <div class="avatar-list-header">
+            <h3>🧍 Kayıt Altındaki Avatarlar</h3>
+            <button class="refresh-btn" onclick="loadAvatars()">↻ Yenile</button>
+        </div>
+        <div id="avatar-list">
+            <div class="wardrobe-empty"><span>🔄</span>Yükleniyor...</div>
+        </div>
+    </div>
+
+    <!-- TAB: Sanal Kabin -->
+    <div class="tab-panel" id="panel-fitting">
+
+        <div class="fitting-layout">
+
+            <!-- Sol: Seçim Alanı -->
+            <div class="fitting-select-panel">
+                <h3>🎛️ Seçimlerini Yap</h3>
+
+                <div class="fitting-select">
+                    <label for="fitAvatarSelect">🧍 Avatarını Seç</label>
+                    <select id="fitAvatarSelect" onchange="updateFittingPreview()">
+                        <option value="">— Avatar seç —</option>
+                    </select>
+                </div>
+
+                <div class="fitting-select">
+                    <label for="fitGarmentSelect">👗 Kıyafetin Seç</label>
+                    <select id="fitGarmentSelect" onchange="updateFittingPreview()">
+                        <option value="">— Kıyafet seç —</option>
+                    </select>
+                </div>
+
+                <!-- Try-On Butonu -->
+                <div class="tryon-btn-wrap">
+                    <button class="btn-tryon" id="tryonBtn" onclick="startTryOnSimulation()">✨ Üzerimde Dene (Simülasyon Başlat)</button>
+                </div>
+
+                <!-- Simülasyon Progress -->
+                <div id="tryon-progress-wrap">
+                    <div class="progress-label">
+                        <span id="tryon-progress-msg">Yapay Zeka kıyafet uyarlanıyor...</span>
+                        <span id="tryon-progress-pct">%0</span>
+                    </div>
+                    <div id="tryon-fill-track">
+                        <div id="tryon-fill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ: Önizleme -->
+            <div class="fitting-preview-panel">
+                <div class="preview-pair">
+
+                    <!-- Avatar Önizleme -->
+                    <div class="preview-card" id="preview-avatar-card">
+                        <div class="preview-card-title">🧍 Seçili Avatar</div>
+                        <div class="preview-card-empty" id="preview-avatar-empty">?</div>
+                        <div id="preview-avatar-details" style="display:none">
+                            <model-viewer id="preview-avatar-viewer"
+                                class="preview-model-viewer"
+                                auto-rotate camera-controls
+                                shadow-intensity="1" alt="Avatar">
+                            </model-viewer>
+                            <div class="preview-card-name" id="preview-avatar-name"></div>
+                            <div class="preview-card-meta" id="preview-avatar-meta"></div>
+                        </div>
+                    </div>
+
+                    <!-- Kıyafet Önizleme -->
+                    <div class="preview-card" id="preview-garment-card">
+                        <div class="preview-card-title">👗 Seçili Kıyafet</div>
+                        <div class="preview-card-empty" id="preview-garment-empty">?</div>
+                        <div id="preview-garment-details" style="display:none">
+                            <img id="preview-garment-img" class="preview-img" src="" alt="Kıyafet">
+                            <div class="preview-card-name" id="preview-garment-name"></div>
+                            <div class="preview-card-meta" id="preview-garment-meta"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Try-On Sonucu -->
+                <div id="tryon-result" style="display:none">
+                    <div class="preview-card" style="border-color:var(--success);">
+                        <div class="preview-card-title" style="color:var(--success)">✨ Try-On Sonucu</div>
+                        <img id="tryon-result-img"
+                             style="width:100%;border-radius:8px;object-fit:contain;max-height:360px;background:var(--surface2);"
+                             src="" alt="Try-On Sonucu">
+                        <div style="font-size:.75rem;color:var(--text-muted);margin-top:.3rem;text-align:center">
+                            🤖 Yapay zeka tarafından üretildi (V3 Mock)
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 
 </div>
 
-<!-- 3D Model Modal -->
+<!-- 3D Model Modal (Kıyafetler) -->
 <div id="model-modal" onclick="closeModal(event)">
     <div class="modal-inner">
         <button class="modal-close" onclick="closeModelModal()">✕</button>
@@ -423,6 +876,378 @@
 // State
 // ────────────────────────────────────────────────────────────
 let pollInterval  = null;
+
+// ─────────────────────────────────────────────────────────────────
+// Tab Switcher
+// ─────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+    ['wardrobe', 'avatar', 'fitting'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+        document.getElementById(`panel-${t}`).classList.toggle('active', t === tab);
+    });
+    if (tab === 'avatar')  loadAvatars();
+    if (tab === 'fitting') loadFittingRoom();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Sanal Kabin — Dropdown Doldur
+// ─────────────────────────────────────────────────────────────────
+
+// Veri önbelleği — seçim sırasında detay erişimi için
+let _fittingAvatars   = [];
+let _fittingGarments  = [];
+
+async function loadFittingRoom() {
+    await Promise.all([_loadFitAvatars(), _loadFitGarments()]);
+    updateFittingPreview();
+}
+
+async function _loadFitAvatars() {
+    try {
+        const res  = await fetch('/api/v1/avatars/?limit=100');
+        if (!res.ok) return;
+        const data = await res.json();
+        _fittingAvatars = data.items || [];
+        const sel = document.getElementById('fitAvatarSelect');
+        sel.innerHTML = '<option value="">— Avatar seç —</option>' +
+            _fittingAvatars.map(a =>
+                `<option value="${esc(a.id)}">${esc(a.name)} (${a.height_cm}cm)</option>`
+            ).join('');
+    } catch {}
+}
+
+async function _loadFitGarments() {
+    try {
+        const res  = await fetch('/api/v1/garments/?limit=100');
+        if (!res.ok) return;
+        const data = await res.json();
+        _fittingGarments = (data.items || []).filter(g => g.status === 'completed' || g.cleaned_url || g.original_url);
+        const sel = document.getElementById('fitGarmentSelect');
+        sel.innerHTML = '<option value="">— Kıyafet seç —</option>' +
+            _fittingGarments.map(g =>
+                `<option value="${esc(g.id)}">${esc(g.name)} — ${esc(typeLabel(g.garment_type))}</option>`
+            ).join('');
+    } catch {}
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Sanal Kabin — Canlı Önizleme
+// ─────────────────────────────────────────────────────────────────
+function updateFittingPreview() {
+    const avatarId   = document.getElementById('fitAvatarSelect').value;
+    const garmentId  = document.getElementById('fitGarmentSelect').value;
+
+    // Avatar önizleme
+    const avatar = _fittingAvatars.find(a => a.id === avatarId);
+    const aEmpty   = document.getElementById('preview-avatar-empty');
+    const aDetails = document.getElementById('preview-avatar-details');
+    if (avatar) {
+        aEmpty.style.display   = 'none';
+        aDetails.style.display = 'block';
+        document.getElementById('preview-avatar-name').textContent = avatar.name;
+        document.getElementById('preview-avatar-meta').innerHTML =
+            `${GENDER_LABELS[avatar.gender] || avatar.gender} · ${avatar.height_cm} cm · ${avatar.weight_kg} kg<br>${SHAPE_LABELS[avatar.body_shape] || avatar.body_shape}`;
+        const viewer = document.getElementById('preview-avatar-viewer');
+        if (avatar.model_url) viewer.setAttribute('src', avatar.model_url);
+        else viewer.removeAttribute('src');
+    } else {
+        aEmpty.style.display   = 'flex';
+        aDetails.style.display = 'none';
+    }
+
+    // Kıyafet önizleme
+    const garment = _fittingGarments.find(g => g.id === garmentId);
+    const gEmpty   = document.getElementById('preview-garment-empty');
+    const gDetails = document.getElementById('preview-garment-details');
+    if (garment) {
+        gEmpty.style.display   = 'none';
+        gDetails.style.display = 'block';
+        document.getElementById('preview-garment-name').textContent = garment.name;
+        const measures = [
+            garment.length_cm        ? `📏 Boy: ${garment.length_cm}cm` : null,
+            garment.width_cm         ? `📊 Bel: ${garment.width_cm}cm` : null,
+            garment.sleeve_length_cm ? `👕 Kol: ${garment.sleeve_length_cm}cm` : null,
+        ].filter(Boolean).join(' · ') || 'Ölçü girilmemiş';
+        document.getElementById('preview-garment-meta').innerHTML =
+            `${typeLabel(garment.garment_type)}<br><small style="opacity:.75">${measures}</small>`;
+        const imgEl  = document.getElementById('preview-garment-img');
+        const imgUrl = garment.cleaned_url || garment.original_url || '';
+        imgEl.src = imgUrl;
+        imgEl.style.display = imgUrl ? 'block' : 'none';
+    } else {
+        gEmpty.style.display   = 'flex';
+        gDetails.style.display = 'none';
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Sanal Kabin — Try-On Gerçek Fetch + Polling
+// ─────────────────────────────────────────────────────────────────
+let _tryonPollTimer = null;
+
+async function startTryOnSimulation() {
+    const avatarId  = document.getElementById('fitAvatarSelect').value;
+    const garmentId = document.getElementById('fitGarmentSelect').value;
+
+    if (!avatarId)  { showToast('⚠️ Lütfen bir avatar seçin.', 'error');  return; }
+    if (!garmentId) { showToast('⚠️ Lütfen bir kıyafet seçin.', 'error'); return; }
+
+    const btn    = document.getElementById('tryonBtn');
+    const wrap   = document.getElementById('tryon-progress-wrap');
+    const msgEl  = document.getElementById('tryon-progress-msg');
+    const pctEl  = document.getElementById('tryon-progress-pct');
+    const fillEl = document.getElementById('tryon-fill');
+    const result = document.getElementById('tryon-result');
+    const resImg = document.getElementById('tryon-result-img');
+
+    // Sıfırla
+    btn.disabled       = true;
+    result.style.display = 'none';
+    wrap.style.display   = 'block';
+    if (_tryonPollTimer) clearInterval(_tryonPollTimer);
+
+    const _setProgress = (pct, msg) => {
+        msgEl.textContent  = msg;
+        pctEl.textContent  = `%${pct}`;
+        fillEl.style.width = `${pct}%`;
+    };
+
+    _setProgress(5, '🚀 POST /api/v1/tryon/ isteği gönderiliyor...');
+
+    // ── 1. Try-on kaydı oluştur ───────────────────────────────────
+    let tryonId;
+    try {
+        const res = await fetch('/api/v1/tryon/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ avatar_id: avatarId, garment_id: garmentId }),
+        });
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || 'Try-on başlatılamadı.');
+        }
+        const data = await res.json();
+        tryonId = data.id;
+        _setProgress(15, `⏳ İşlem kuyruğa alındı (ID: ${tryonId.slice(0,8)}...)`);
+    } catch (err) {
+        _setProgress(0, `❌ Hata: ${err.message}`);
+        btn.disabled = false;
+        showToast(`❌ ${err.message}`, 'error');
+        return;
+    }
+
+    // ── 2. Polling — her 2 saniyede bir GET ──────────────────────
+    let pollCount = 0;
+    const POLL_MESSAGES = [
+        '🔍 Vücut ölçüleri analiz ediliyor...',
+        '🧵 Kumaş simülasyonu hesaplanıyor...',
+        '🤖 Yapay Zeka (IDM-VTON) uyarlıyor...',
+        '🎨 Doku ve gölge efektleri uygulanıyor...',
+        '⏳ Son rötuşlar yapılıyor...',
+    ];
+
+    _tryonPollTimer = setInterval(async () => {
+        pollCount++;
+        const pct = Math.min(15 + pollCount * 14, 90);
+        const msg = POLL_MESSAGES[Math.min(pollCount - 1, POLL_MESSAGES.length - 1)];
+        _setProgress(pct, msg);
+
+        try {
+            const res  = await fetch(`/api/v1/tryon/${tryonId}`);
+            if (!res.ok) return;
+            const data = await res.json();
+
+            if (data.status === 'completed') {
+                clearInterval(_tryonPollTimer);
+                _setProgress(100, '✅ İşlem tamamlandı!');
+                setTimeout(() => {
+                    wrap.style.display   = 'none';
+                    fillEl.style.width   = '0%';
+                    btn.disabled         = false;
+                    // Sonucu göster
+                    if (data.result_url) {
+                        resImg.src           = data.result_url;
+                        result.style.display = 'block';
+                    }
+                    showToast('🎉 Try-on tamamlandı! (V3 gerçek asenkron mimari)', 'success');
+                }, 700);
+
+            } else if (data.status === 'failed') {
+                clearInterval(_tryonPollTimer);
+                _setProgress(0, `❌ İşlem başarısız oldu.`);
+                btn.disabled = false;
+                showToast('❌ Try-on başarısız oldu.', 'error');
+            }
+        } catch { /* polling hatası sessizce atla */ }
+    }, 2000);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Avatar — List
+// ─────────────────────────────────────────────────────────────────
+async function loadAvatars() {
+    const grid = document.getElementById('avatar-list');
+    grid.innerHTML = '<div class="wardrobe-empty"><span>🔄</span>Yükleniyor...</div>';
+    try {
+        const res  = await fetch('/api/v1/avatars/?limit=50');
+        if (!res.ok) throw new Error('API hatası');
+        const data = await res.json();
+        if (!data.items || data.items.length === 0) {
+            grid.innerHTML = '<div class="wardrobe-empty"><span>🧍</span>Henüz avatar oluşturulmadı.</div>';
+            return;
+        }
+        grid.innerHTML = data.items.map(buildAvatarCard).join('');
+    } catch(err) {
+        grid.innerHTML = `<div class="wardrobe-empty"><span>⚠️</span>${esc(err.message)}</div>`;
+    }
+}
+
+const SHAPE_LABELS = {
+    rectangle:          'Dikdörtgen',
+    hourglass:          'Kum Saati',
+    triangle:           'Armut',
+    inverted_triangle:  'Ters Üçgen',
+    oval:               'Oval',
+};
+const GENDER_LABELS = { male: 'Erkek', female: 'Kadın', unisex: 'Unisex' };
+
+function buildAvatarCard(avatar) {
+    const viewerHtml = avatar.model_url
+        ? `<model-viewer
+               src="${esc(avatar.model_url)}"
+               style="width:100%;height:300px;background-color:#1a1a2e;border-radius:8px;display:block;"
+               camera-controls
+               auto-rotate
+               shadow-intensity="1"
+               alt="${esc(avatar.name)}">
+           </model-viewer>`
+        : `<div class="avatar-card-placeholder">🧍</div>`;
+
+    const actionBtn = avatar.model_url
+        ? `<button class="btn-rpm" style="background:linear-gradient(135deg,var(--success),#16a34a)"
+               onclick="generateMockAvatar('${avatar.id}')">✏️ 3D Modeli Yenile (Mock)</button>`
+        : `<button class="btn-rpm" onclick="generateMockAvatar('${avatar.id}')">🎭 Örnek Avatar Üret (Mock)</button>`;
+
+    return `
+    <div class="avatar-card" id="acard-${avatar.id}">
+        ${viewerHtml}
+        <div class="avatar-card-body">
+            <div class="avatar-card-name">${esc(avatar.name)}</div>
+            <div class="avatar-card-meta">
+                ${GENDER_LABELS[avatar.gender] || avatar.gender} ·
+                ${avatar.height_cm} cm · ${avatar.weight_kg} kg ·
+                ${SHAPE_LABELS[avatar.body_shape] || avatar.body_shape}
+            </div>
+            ${actionBtn}
+        </div>
+    </div>`;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Mock Avatar — Örnek GLB URL ile modeli simüle et
+// ─────────────────────────────────────────────────────────────────
+const MOCK_AVATAR_URL = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+
+async function generateMockAvatar(id) {
+    showToast('⏳ Örnek 3D avatar yükleniyor...', 'success');
+    try {
+        const response = await fetch(`/api/v1/avatars/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ model_url: MOCK_AVATAR_URL })
+        });
+        
+        if (response.ok) {
+            showToast('🎉 Avatar 3D modeli başarıyla eklendi!', 'success');
+            loadAvatars(); // Galeriyi yenile
+        } else {
+            showToast('❌ Avatar güncellenirken sunucu hatası oluştu.', 'error');
+        }
+    } catch (err) {
+        console.error("Avatar güncelleme hatası:", err);
+        showToast('❌ Bağlantı hatası yaşandı.', 'error');
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Toast Notification
+// ─────────────────────────────────────────────────────────────────
+let _toastTimer = null;
+function showToast(msg, type = 'success') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className   = `show ${type}`;
+    if (_toastTimer) clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => { el.className = ''; }, 4000);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Shape Chip Picker
+// ─────────────────────────────────────────────────────────────────
+document.addEventListener('click', e => {
+    if (e.target.classList.contains('shape-chip')) {
+        document.querySelectorAll('.shape-chip').forEach(c => c.classList.remove('active'));
+        e.target.classList.add('active');
+    }
+});
+
+// ─────────────────────────────────────────────────────────────────
+// Avatar — Create
+// ─────────────────────────────────────────────────────────────────
+async function createAvatar() {
+    const name      = (document.getElementById('avatarName').value.trim()  || 'Benim Avatarım');
+    const gender    = document.getElementById('avatarGender').value;
+    const height    = parseInt(document.getElementById('avatarHeight').value, 10);
+    const weight    = parseInt(document.getElementById('avatarWeight').value, 10);
+    const shapeEl   = document.querySelector('.shape-chip.active');
+    const bodyShape = shapeEl ? shapeEl.dataset.val : 'rectangle';
+
+    // Dogrulama
+    if (!height || height < 50 || height > 250) { showToast('⚠️ Geçerli bir boy girin (50–250 cm).', 'error'); return; }
+    if (!weight || weight < 20 || weight > 300) { showToast('⚠️ Geçerli bir kilo girin (20–300 kg).', 'error'); return; }
+
+    const btn = document.getElementById('avatarSaveBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Kaydediliyor...';
+
+    try {
+        const res = await fetch('/api/v1/avatars/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name, gender,
+                height_cm: height,
+                weight_kg: weight,
+                body_shape: bodyShape,
+            }),
+        });
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || 'Kayıt hatası');
+        }
+        const avatar = await res.json();
+        showToast(
+            `✅ Avatar profiliniz kaydedildi! (${avatar.height_cm}cm / ${avatar.weight_kg}kg)\n` +
+            `3D model üretimi yakında aktif edilecek! 🧊`,
+            'success'
+        );
+        // Formu temizle
+        document.getElementById('avatarName').value   = '';
+        document.getElementById('avatarHeight').value = '';
+        document.getElementById('avatarWeight').value = '';
+        document.querySelectorAll('.shape-chip').forEach(c => c.classList.remove('active'));
+        document.querySelector('.shape-chip[data-val="rectangle"]')?.classList.add('active');
+        loadAvatars();   // listeyi aninda guncelle
+    } catch(err) {
+        showToast(`❌ ${err.message}`, 'error');
+    } finally {
+        btn.disabled    = false;
+        btn.textContent = '💾 Avatar Profilini Kaydet';
+    }
+}
+
 
 // ────────────────────────────────────────────────────────────
 // Progress helpers
@@ -483,6 +1308,14 @@ async function uploadGarment() {
     const formData = new FormData();
     formData.append('file', fileInput.files[0]);
     formData.append('garment_type', typeInput.value);
+
+    // Opsiyonel fiziksel olculer — dolu ise ekle
+    const lengthVal  = parseInt(document.getElementById('lengthCm').value, 10);
+    const widthVal   = parseInt(document.getElementById('widthCm').value, 10);
+    const sleeveVal  = parseInt(document.getElementById('sleeveLengthCm').value, 10);
+    if (!isNaN(lengthVal)  && lengthVal  > 0) formData.append('length_cm',        lengthVal);
+    if (!isNaN(widthVal)   && widthVal   > 0) formData.append('width_cm',         widthVal);
+    if (!isNaN(sleeveVal)  && sleeveVal  > 0) formData.append('sleeve_length_cm', sleeveVal);
 
     // BYOK: localStorage'dan anahtari al, varsa X-Tripo-Key header olarak gonder
     const userKey = getApiKey();
@@ -625,6 +1458,15 @@ function buildCard(item) {
         ? `<button class="card-model-btn" onclick="openModelModal('${esc(item.model_url)}')">🧊 3D Görüntüle</button>`
         : '';
 
+    // Ölçü rozetleri
+    const badges = [];
+    if (item.length_cm)       badges.push(`📏 Boy: ${item.length_cm}cm`);
+    if (item.width_cm)        badges.push(`📊 Bel: ${item.width_cm}cm`);
+    if (item.sleeve_length_cm) badges.push(`👕 Kol: ${item.sleeve_length_cm}cm`);
+    const badgeHtml = badges.length
+        ? `<div class="measure-badges">${badges.map(b => `<span class="measure-badge">${b}</span>`).join('')}</div>`
+        : '';
+
     return `
     <div class="garment-card${favCls}" id="card-${item.id}">
         <span class="fav-star">⭐</span>
@@ -632,6 +1474,7 @@ function buildCard(item) {
         <div class="card-body">
             <div class="card-name" id="name-${item.id}">${esc(item.name || 'İsimsiz Kıyafet')}</div>
             <div class="card-type">${esc(typeLabel(item.garment_type))}</div>
+            ${badgeHtml}
             ${statusBadge(item.status)}
             ${errorHtml}
             <div class="card-actions">
@@ -736,9 +1579,18 @@ function closeModal(event) {
     if (event.target.id === 'model-modal') closeModelModal();
 }
 
-// ────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// XSS-safe escape helper
+// ─────────────────────────────────────────────────────────────────
+function esc(str) {
+    return String(str ?? '')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─────────────────────────────────────────────────────────────────
 // Init
-// ────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('results').style.display = 'none';
 
@@ -750,7 +1602,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     loadWardrobe();
+    loadAvatars();   // Avatar sekmesi hazır olsun (arka planda)
 });
 </script>
+
+<!-- Toast -->
+<div id="toast"></div>
+
 </body>
 </html>

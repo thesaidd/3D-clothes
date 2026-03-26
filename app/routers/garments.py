@@ -7,6 +7,7 @@ GET  /api/v1/garments/jobs/{job_id} -> Pipeline adim adim durum sorgula
 """
 import logging
 import uuid
+from typing import Optional
 
 from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, UploadFile
 from sqlalchemy.orm import Session
@@ -80,6 +81,9 @@ def list_garments(
                 original_url      = item.original_url,
                 cleaned_url       = item.cleaned_url,
                 model_url         = item.model_url,
+                length_cm         = item.length_cm,
+                width_cm          = item.width_cm,
+                sleeve_length_cm  = item.sleeve_length_cm,
                 created_at        = item.created_at,
                 updated_at        = item.updated_at,
             )
@@ -111,15 +115,16 @@ def update_garment(
     if not garment:
         raise HTTPException(status_code=404, detail=f"Kiyafet bulunamadi: {garment_id}")
 
-    if body.name is not None:
-        garment.name = body.name.strip() or "İsimsiz Kiyafet"
-    if body.is_favorite is not None:
-        garment.is_favorite = body.is_favorite
+    if body.name             is not None: garment.name             = body.name.strip() or "İsimsiz Kiyafet"
+    if body.is_favorite      is not None: garment.is_favorite      = body.is_favorite
+    if body.length_cm        is not None: garment.length_cm        = body.length_cm
+    if body.width_cm         is not None: garment.width_cm         = body.width_cm
+    if body.sleeve_length_cm is not None: garment.sleeve_length_cm = body.sleeve_length_cm
     garment.updated_at = datetime.now(timezone.utc)
 
     db.commit()
     db.refresh(garment)
-    logger.info(f"[Garment {garment_id}] Guncellendi: name={garment.name!r}, fav={garment.is_favorite}")
+    logger.info(f"[Garment {garment_id}] Guncellendi.")
 
     return GarmentRecord(
         id                = str(garment.id),
@@ -133,6 +138,9 @@ def update_garment(
         original_url      = garment.original_url,
         cleaned_url       = garment.cleaned_url,
         model_url         = garment.model_url,
+        length_cm         = garment.length_cm,
+        width_cm          = garment.width_cm,
+        sleeve_length_cm  = garment.sleeve_length_cm,
         created_at        = garment.created_at,
         updated_at        = garment.updated_at,
     )
@@ -181,6 +189,18 @@ async def upload_garment(
     garment_type: str = Form(
         default="shirt",
         description="Kiyafet turu: shirt | pants | dress | jacket | skirt",
+    ),
+    length_cm: Optional[int] = Form(
+        default=None,
+        description="Kiyafet boyu (cm), opsiyonel",
+    ),
+    width_cm: Optional[int] = Form(
+        default=None,
+        description="Genislik/bel olcusu (cm), opsiyonel",
+    ),
+    sleeve_length_cm: Optional[int] = Form(
+        default=None,
+        description="Kol boyu (cm), opsiyonel",
     ),
     x_tripo_key: str = Header(
         default="",
@@ -250,6 +270,9 @@ async def upload_garment(
         original_filename = file.filename,
         status            = "queued",
         original_url      = image_ref,
+        length_cm         = length_cm,
+        width_cm          = width_cm,
+        sleeve_length_cm  = sleeve_length_cm,
     )
     db.add(garment)
     db.commit()

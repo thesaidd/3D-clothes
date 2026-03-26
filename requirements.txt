@@ -25,6 +25,8 @@ psycopg2-binary==2.9.9  # PostgreSQL surucusu (binary, derleme gerektirmez)
 
 # ── (Phase 3) AI / Storage ───────────────────────────────────────
 boto3==1.34.0           # AWS S3 dosya depolama
-httpx==0.27.0          # Tripo3D API HTTP istemcisi
+httpx==0.27.0           # Tripo3D API HTTP istemcisi
 # nudenet==3.4.2
 
+# ── (Phase 4) AI Try-On ──────────────────────────────────────────
+gradio_client>=0.16.0   # Hugging Face Space API'si (IDM-VTON)

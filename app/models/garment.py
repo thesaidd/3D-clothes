@@ -8,7 +8,7 @@ Tablo: garments
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, Column, DateTime, String, Text
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.db.database import Base
@@ -96,6 +96,25 @@ class Garment(Base):
         Text,
         nullable=True,
         comment="Uretilen 3D GLB modelinin URL'si",
+    )
+
+    # ── Fiziksel Ölçüler (opsiyonel) ──────────────────────────
+    length_cm = Column(
+        Integer,
+        nullable=True,
+        comment="Kiyafetin boyu (cm) — opsiyonel",
+    )
+
+    width_cm = Column(
+        Integer,
+        nullable=True,
+        comment="Kiyafetin genisligi / bel olcusu (cm) — opsiyonel",
+    )
+
+    sleeve_length_cm = Column(
+        Integer,
+        nullable=True,
+        comment="Kol boyu (cm) — opsiyonel",
     )
 
     # ── Zaman Damgalari ───────────────────────────────────────────
